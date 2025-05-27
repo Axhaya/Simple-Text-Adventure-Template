@@ -1,5 +1,6 @@
 {
     "current_section": 0,
+    "last_section": 0,
     "0": {
         "dialogue": [
             "The first section"
@@ -21,7 +22,7 @@
         "actions": [
             {
                 "keyword": "back",
-                "text": "Go back to test 1",
+                "text": "Go back to the 1st section",
                 "execute_text": "sending you back",
                 "next_section_id": -1,
                 "go_back_section": true

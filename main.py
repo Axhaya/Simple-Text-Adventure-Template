@@ -109,7 +109,7 @@ def section_switch(new_section:section = section(), go_back:bool = False):
     global current_selected_slot
     global current_game
 
-    save_game(current_selected_slot, current_game, current_game.index(current_section))
+    save_game(current_selected_slot, current_game, current_game.index(current_section), current_game.index(last_section))
 
     current_section.display()
 
@@ -118,9 +118,10 @@ def clear_screen():
 
 # # # # #
 
-def save_game(slot:int, sections:list[section], current_section_id:int):
+def save_game(slot:int, sections:list[section], current_section_id:int , last_section_id:int):
     secs = {}
     secs["current_section"] = current_section_id
+    secs["last_section"] = last_section_id
 
     for s in sections:
         actions = []
@@ -129,7 +130,7 @@ def save_game(slot:int, sections:list[section], current_section_id:int):
                             "next_section_id" : sections.index(a.next_section) if a.next_section != None else -1, "go_back_section" : a.go_back_section})
         
         x = {"dialogue" : s.dialogue, "actions" : actions}
-        secs[len(secs)-1] = x
+        secs[len(secs)-2] = x
     
     with open(resource_path('save'+str(slot)+'.json'), 'w') as f:
         json.dump(secs, f, indent=4)
@@ -150,7 +151,7 @@ def load_game(slot:int):
     
     loaded_game:list[section] = []
 
-    for i in range(len(game)-1):
+    for i in range(len(game)-2):
         sec = section()
         for d in game[str(i)]["dialogue"]:
             sec.add_dialogue(d)
@@ -170,6 +171,9 @@ def load_game(slot:int):
 
     global current_selected_slot
     current_selected_slot = slot
+
+    global last_section
+    last_section = current_game[game["last_section"]]
 
     current_game[game["current_section"]].display()
 
