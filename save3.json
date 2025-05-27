@@ -1,6 +1,6 @@
 {
-    "current_section": 1,
-    "1": {
+    "current_section": 0,
+    "0": {
         "dialogue": [
             "The first section"
         ],
@@ -14,7 +14,7 @@
             }
         ]
     },
-    "2": {
+    "1": {
         "dialogue": [
             "The second section"
         ],

@@ -129,7 +129,7 @@ def save_game(slot:int, sections:list[section], current_section_id:int):
                             "next_section_id" : sections.index(a.next_section) if a.next_section != None else -1, "go_back_section" : a.go_back_section})
         
         x = {"dialogue" : s.dialogue, "actions" : actions}
-        secs[len(secs)] = x
+        secs[len(secs)-1] = x
     
     with open(resource_path('save'+str(slot)+'.json'), 'w') as f:
         json.dump(secs, f, indent=4)
