@@ -6,7 +6,7 @@ A simple text adventure template using python and json, made to easily create co
 + multiple actions possible per section
 
 ## Usage
-Download the files and adjust the mainmenu and newgame json files as you like. 
+Download the files and adjust the mainmenu and sections json files as you like. 
 
 For easy section creation, there is also a section template to just copy into newgame and edit. Make sure that the top variable "current_section" of newgame.json is set to the id of the first section of your game.
 
