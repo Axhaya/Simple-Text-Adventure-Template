@@ -10,7 +10,6 @@
                 "text": "action X",
                 "execute_text": "Executed the action",
                 "next_section_id": -1,
-                "go_back_section": false,
                 "vars_needed_to_show": [],
                 "negative_vars_needed_to_show": [],
                 "vars_set_true": [],

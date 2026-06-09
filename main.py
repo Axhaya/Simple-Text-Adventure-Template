@@ -13,7 +13,7 @@ def resource_path(relative_path):
 # # # # #
 
 class action(object):
-    def __init__(self, keyword:str, text:str, execute_text:str = "", next_section = None, go_back_section:bool = False,
+    def __init__(self, keyword:str, text:str, execute_text:str = "", next_section = None,
                  vars_needed_to_show = [], negative_vars_needed_to_show = [], vars_set_true = [], vars_set_false = []):
         self.keyword = keyword
         self.key_number = -1
@@ -21,7 +21,6 @@ class action(object):
         self.execute_text = execute_text
         self.next_section = next_section
         self.next_section_id = -1
-        self.go_back_section = go_back_section
         self.vars_needed_to_show = vars_needed_to_show
         self.negative_vars_needed_to_show = negative_vars_needed_to_show
         self.vars_set_true = vars_set_true
@@ -62,11 +61,8 @@ class action(object):
         for var in self.vars_set_false:
             current_save[var] = False
 
-        if self.next_section != None or self.go_back_section == True:
-            if not self.go_back_section:
-                section_switch(self.next_section)
-            else:
-                section_switch(go_back=True)
+        if self.next_section != None:
+            section_switch(self.next_section)
             return True
 
         return False
@@ -129,14 +125,14 @@ def set_current_section(section:section):
     global current_section
     current_section = section
 
-def section_switch(new_section:section = section(), go_back:bool = False):
+def section_switch(new_section:section):
     global current_section
     global last_section
     
     temp = current_section
 
     clear_screen()
-    current_section = new_section if not go_back else last_section
+    current_section = new_section
     
     last_section = temp
 
@@ -189,8 +185,7 @@ def load_game(slot:int):
     for s in range(len(loaded_game)):
         for a in game[str(s)]["actions"]:
             act = action(keyword=a["keyword"], text=a["text"], execute_text=a["execute_text"],
-                         next_section=loaded_game[a["next_section_id"]] if a["next_section_id"] > 0 else None, 
-                         go_back_section=a["go_back_section"],
+                         next_section=loaded_game[a["next_section_id"]] if a["next_section_id"] > 0 else None,
                          vars_needed_to_show=a["vars_needed_to_show"], negative_vars_needed_to_show=a["negative_vars_needed_to_show"], vars_set_true=a["vars_set_true"], vars_set_false=a["vars_set_false"])
             loaded_game[s].add_action(act)
     
