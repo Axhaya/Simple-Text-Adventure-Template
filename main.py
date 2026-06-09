@@ -13,7 +13,8 @@ def resource_path(relative_path):
 # # # # #
 
 class action(object):
-    def __init__(self, keyword:str, text:str, execute_text:str = "", next_section = None, go_back_section:bool = False):
+    def __init__(self, keyword:str, text:str, execute_text:str = "", next_section = None, go_back_section:bool = False,
+                 vars_needed_to_show = [], negative_vars_needed_to_show = [], vars_set_true = [], vars_set_false = []):
         self.keyword = keyword
         self.key_number = -1
         self.text = text
@@ -21,9 +22,28 @@ class action(object):
         self.next_section = next_section
         self.next_section_id = -1
         self.go_back_section = go_back_section
+        self.vars_needed_to_show = vars_needed_to_show
+        self.negative_vars_needed_to_show = negative_vars_needed_to_show
+        self.vars_set_true = vars_set_true
+        self.vars_set_false = vars_set_false
     
     def set_key_number(self, key_number:int):
         self.key_number = key_number
+
+    global current_save
+
+    def can_display(self) -> bool:
+        for var in self.vars_needed_to_show:
+            if not var in current_save or current_save[var] == False:
+                return False
+
+        for var in self.negative_vars_needed_to_show:
+            if not var in current_save:
+                continue
+            if current_save[var] == True:
+                return False
+
+        return True
 
     def execute(self, text_input:str) -> bool:
         if text_input.lower() != self.keyword.lower() and text_input != str(self.key_number):
@@ -35,6 +55,13 @@ class action(object):
             print("")
             input("press any key to continue")
         
+        ## Variable switch
+        for var in self.vars_set_true:
+            current_save[var] = True
+        
+        for var in self.vars_set_false:
+            current_save[var] = False
+
         if self.next_section != None or self.go_back_section == True:
             if not self.go_back_section:
                 section_switch(self.next_section)
@@ -68,12 +95,19 @@ class section(object):
             input("press any key to continue\n")
             print('\033[F\033[K', end='', flush=True)
 
+        print("")
         print(self.dialogue[-1])
         print("")
 
+        ## Print actions
+        id = 1
         for a in range(len(self.actions)):
-            print(a+1," - ", self.actions[a].text)
-            self.actions[a].set_key_number(a+1)
+            if not self.actions[a].can_display():
+                continue
+
+            print(id," - ", self.actions[a].text)
+            self.actions[a].set_key_number(id)
+            id += 1
         print("")
 
         text_input = input("What will you do?\n")
@@ -120,12 +154,13 @@ def clear_screen():
 # # # # #
 
 def save_game(slot:int, current_section_id:int , last_section_id:int):
-    secs = {}
-    secs["current_section"] = current_section_id
-    secs["last_section"] = last_section_id
-    
+    global current_save
+
+    current_save["current_section"] = current_section_id
+    current_save["last_section"] = last_section_id
+
     with open(resource_path('save'+str(slot)+'.json'), 'w') as f:
-        json.dump(secs, f, indent=4)
+        json.dump(current_save, f, indent=4)
 
 def load_new_game(slot:int):
     with open(resource_path('newsave.json')) as n:
@@ -155,7 +190,8 @@ def load_game(slot:int):
         for a in game[str(s)]["actions"]:
             act = action(keyword=a["keyword"], text=a["text"], execute_text=a["execute_text"],
                          next_section=loaded_game[a["next_section_id"]] if a["next_section_id"] > 0 else None, 
-                         go_back_section=a["go_back_section"])
+                         go_back_section=a["go_back_section"],
+                         vars_needed_to_show=a["vars_needed_to_show"], negative_vars_needed_to_show=a["negative_vars_needed_to_show"], vars_set_true=a["vars_set_true"], vars_set_false=a["vars_set_false"])
             loaded_game[s].add_action(act)
     
     clear_screen()
@@ -165,6 +201,9 @@ def load_game(slot:int):
 
     global current_selected_slot
     current_selected_slot = slot
+
+    global current_save
+    current_save = save
 
     global last_section
     last_section = current_game[save["last_section"]]
