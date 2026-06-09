@@ -114,7 +114,8 @@ def section_switch(new_section:section = section(), go_back:bool = False):
     current_section.display()
 
 def clear_screen():
-    os.system('cls')  
+    cmd = "cls" if os.name == "nt" else "clear"
+    os.system(cmd)  
 
 # # # # #
 
