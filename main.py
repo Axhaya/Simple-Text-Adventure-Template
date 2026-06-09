@@ -185,7 +185,7 @@ def load_game(slot:int):
     for s in range(len(loaded_game)):
         for a in game[str(s)]["actions"]:
             act = action(keyword=a["keyword"], text=a["text"], execute_text=a["execute_text"],
-                         next_section=loaded_game[a["next_section_id"]] if a["next_section_id"] > 0 else None,
+                         next_section=loaded_game[a["next_section_id"]] if a["next_section_id"] >= 0 else None,
                          vars_needed_to_show=a["vars_needed_to_show"], negative_vars_needed_to_show=a["negative_vars_needed_to_show"], vars_set_true=a["vars_set_true"], vars_set_false=a["vars_set_false"])
             loaded_game[s].add_action(act)
     
